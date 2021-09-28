@@ -187,6 +187,19 @@ public class ContactsX extends CordovaPlugin {
             projection.add(ContactsContract.CommonDataKinds.Email.LABEL);
         }
 
+        // Getting Work Information
+        // The name of the organization associated with the contact.
+        projection.add(ContactsContract.CommonDataKinds.Organization.TITLE);
+
+        // The contact’s job title.
+        projection.add(ContactsContract.CommonDataKinds.Organization.JOB_DESCRIPTION);
+        
+        // The name of the department associated with the contact.
+        projection.add(ContactsContract.CommonDataKinds.Organization.DEPARTMENT);
+        
+        // The phonetic name of the organization associated with the contact.
+        projection.add(ContactsContract.CommonDataKinds.Organization.PHONETIC_NAME);
+
         return projection;
     }
 
@@ -225,7 +238,6 @@ public class ContactsX extends CordovaPlugin {
                 if (!contactsById.containsKey(contactId)) {
                     // this contact does not yet exist in HashMap,
                     // so put it to the HashMap
-
                     jsContact.put("id", contactId);
                     jsContact.put("rawId", rawId);
                     if (options.displayName) {
@@ -273,6 +285,22 @@ public class ContactsX extends CordovaPlugin {
                             }
                         } catch (IllegalArgumentException ignored) {
                         }
+                        break;
+                    case ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE:
+                        try {
+                            String jobTitle = contactsCursor.getString(contactsCursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Organization.TITLE));
+                            jsContact.put("jobTitle", jobTitle);
+                            
+                            String departmentName = contactsCursor.getString(contactsCursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Organization.JOB_DESCRIPTION));
+                            jsContact.put("departmentName", departmentName);
+                            
+                            String organizationName = contactsCursor.getString(contactsCursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Organization.DEPARTMENT));
+                            jsContact.put("organizationName", organizationName);
+                            
+                            String phoneticOrganizationName = contactsCursor.getString(contactsCursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Organization.PHONETIC_NAME));
+                            jsContact.put("phoneticOrganizationName", phoneticOrganizationName);
+                        } catch (IllegalArgumentException ignored) {
+                        }                  
                         break;
                 }
 
