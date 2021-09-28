@@ -63,5 +63,25 @@ declare module 'cordova-plugin-contacts-x' {
      * unformatted emails of the contact
      */
     emails?: ContactXEmail[];
+
+    /**
+     * The contact’s job title.
+     */
+    jobTitle?: string;
+
+    /**
+     * The name of the department associated with the contact.
+     */
+    departmentName?: string;
+
+    /**
+     * The name of the organization associated with the contact.
+     */
+    organizationName?: string;
+
+    /**
+     * The phonetic name of the organization associated with the contact.
+     */
+    phoneticOrganizationName?: string;
   }
 }
