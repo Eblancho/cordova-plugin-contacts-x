@@ -53,12 +53,27 @@ class ContactX {
         if(options.firstName) {
             result["firstName"] = self.contact.givenName;
         }
+
         if(options.middleName) {
             result["middleName"] = self.contact.middleName;
         }
+
         if(options.familyName) {
             result["familyName"] = self.contact.familyName;
         }
+
+        // Getting Work Information
+        // The contact’s job title.
+        result["jobTitle"] = self.contact.jobTitle;
+        
+        // The name of the department associated with the contact.
+        result["departmentName"] = self.contact.departmentName;
+
+        // The name of the organization associated with the contact.
+        result["organizationName"] = self.contact.organizationName;
+        
+        // The phonetic name of the organization associated with the contact.
+        result["phoneticOrganizationName"] = self.contact.phoneticOrganizationName;
 
         return result as NSDictionary;
     }
