@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='utf-8'?>
-<plugin id="cordova-plugin-contacts-x" version="2.0.3" xmlns="http://apache.org/cordova/ns/plugins/1.0">
+<plugin id="cordova-plugin-contacts-x" version="3.0.0" xmlns="http://apache.org/cordova/ns/plugins/1.0">
     <name>ContactsX</name>
     <description>Cordova Plugins for managing contacts</description>
 
-    <repo>https://github.com/EinfachHans/cordova-plugin-contacts-x</repo>
-    <issue>https://github.com/EinfachHans/cordova-plugin-contacts-x/issues</issue>
+    <repo>https://github.com/Eblancho/cordova-plugin-contacts-x</repo>
+    <issue>https://github.com/Eblancho/cordova-plugin-contacts-x/issues</issue>
 
     <license>MIT</license>
 
@@ -40,7 +40,7 @@
         <source-file src="src/ios/ContactsXOptions.swift"  />
 
         <config-file target="*-Info.plist" parent="NSContactsUsageDescription">
-            <string>This app requires access to the contacts to manage them.</string>
+            <string>Cette application nécessite un accès aux contacts pour les gérer.</string>
         </config-file>
 
         <dependency id="cordova-plugin-add-swift-support" version="2.0.2"/>
