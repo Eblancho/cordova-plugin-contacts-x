@@ -65,6 +65,12 @@ import ContactsUI
         if(options.emails) {
             keysToFetch.append(CNContactEmailAddressesKey);
         }
+        
+        keysToFetch.append(CNContactJobTitleKey);
+        keysToFetch.append(CNContactDepartmentNameKey);
+        keysToFetch.append(CNContactOrganizationNameKey);
+        keysToFetch.append(CNContactPhoneticOrganizationNameKey);
+        
         return keysToFetch;
     }
 
