@@ -1,5 +1,6 @@
 import Contacts
 import ContactsUI
+import PhoneNumberKit
 
 @objc(ContactsX) class ContactsX : CDVPlugin, CNContactPickerDelegate {
 
