@@ -303,22 +303,6 @@ public class ContactsX extends CordovaPlugin {
                         } catch (IllegalArgumentException ignored) {
                         }
                         break;
-                    case ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE:
-                        try {
-                            String jobTitle = contactsCursor.getString(contactsCursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Organization.TITLE));
-                            jsContact.put("jobTitle", jobTitle);
-                            
-                            String departmentName = contactsCursor.getString(contactsCursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Organization.JOB_DESCRIPTION));
-                            jsContact.put("departmentName", departmentName);
-                            
-                            String organizationName = contactsCursor.getString(contactsCursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Organization.DEPARTMENT));
-                            jsContact.put("organizationName", organizationName);
-                            
-                            String phoneticOrganizationName = contactsCursor.getString(contactsCursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Organization.PHONETIC_NAME));
-                            jsContact.put("phoneticOrganizationName", phoneticOrganizationName);
-                        } catch (IllegalArgumentException ignored) {
-                        }                  
-                        break;
                 }
 
                 contactsById.put(contactId, jsContact);
