@@ -15,6 +15,10 @@ import android.net.Uri;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
 
+import com.google.i18n.phonenumbers.NumberParseException;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.Phonenumber;
+
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
 
@@ -44,6 +48,8 @@ public class ContactsX extends CordovaPlugin {
 
     public static final int REQ_CODE_PERMISSIONS = 0;
     public static final int REQ_CODE_PICK = 2;
+
+    private PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
 
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) {
@@ -191,6 +197,8 @@ public class ContactsX extends CordovaPlugin {
         // The name of the organization associated with the contact.
         projection.add(ContactsContract.CommonDataKinds.Organization.TITLE);
 
+        projection.add(ContactsContract.CommonDataKinds.Organization.COMPANY);
+
         // The contact’s job title.
         projection.add(ContactsContract.CommonDataKinds.Organization.JOB_DESCRIPTION);
         
@@ -213,6 +221,9 @@ public class ContactsX extends CordovaPlugin {
         }
         if (options.firstName || options.middleName || options.familyName) {
             selectionArgs.add(ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE);
+        }
+        if (options.organizationName) {
+            selectionArgs.add(ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE);
         }
 
         return selectionArgs;
@@ -263,12 +274,18 @@ public class ContactsX extends CordovaPlugin {
                 switch (mimeType) {
                     case ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE:
                         JSONArray jsPhoneNumbers = jsContact.getJSONArray("phoneNumbers");
-                        jsPhoneNumbers.put(phoneQuery(contactsCursor));
+                        jsPhoneNumbers.put(phoneQuery(contactsCursor, options));
                         break;
                     case ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE:
                         JSONArray emailAddresses = jsContact.getJSONArray("emails");
                         emailAddresses.put(emailQuery(contactsCursor));
                         break;
+                    case ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE:
+                        if (options.organizationName) {
+                            String organizationName = contactsCursor.getString(contactsCursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Organization.COMPANY));
+                            jsContact.put("organizationName", organizationName);
+                        }
+                        break;  
                     case ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE:
                         try {
                             if (options.firstName) {
@@ -313,7 +330,7 @@ public class ContactsX extends CordovaPlugin {
         return jsContacts;
     }
 
-    private JSONObject phoneQuery(Cursor cursor) throws JSONException {
+    private JSONObject phoneQuery(Cursor cursor, ContactsXFindOptions options) throws JSONException {
         JSONObject phoneNumber = new JSONObject();
         int typeCode = cursor.getInt(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.TYPE));
         String typeLabel = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.LABEL));
@@ -340,6 +357,18 @@ public class ContactsX extends CordovaPlugin {
             Intent contactPickerIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
             this.cordova.startActivityForResult(this, contactPickerIntent, REQ_CODE_PICK);
         });
+    }
+    
+    private String getNormalizedPhoneNumber(String phoneNumber, ContactsXFindOptions options) {
+        if(options.baseCountryCode != null && phoneNumber != null){
+            try {
+                Phonenumber.PhoneNumber phoneNumberProto = phoneUtil.parse(phoneNumber, options.baseCountryCode);
+                return phoneUtil.format(phoneNumberProto, PhoneNumberUtil.PhoneNumberFormat.E164);
+            } catch (NumberParseException e) {
+                return "";
+            }
+        }
+        return "";
     }
 
     private JSONObject getContactById(String id) {
@@ -457,6 +486,16 @@ public class ContactsX extends CordovaPlugin {
                     .build());
         } else {
             LOG.d(LOG_TAG, "All \"name\" properties are empty");
+        }
+
+        // Add organizationName
+        String organizationName = getJsonString(contact, "organizationName");
+        if(organizationName != null){
+            ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                    .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+                    .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
+                    .withValue(ContactsContract.CommonDataKinds.Organization.COMPANY, organizationName)
+                    .build());
         }
 
         //Add phone numbers

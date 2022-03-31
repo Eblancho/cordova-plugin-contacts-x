@@ -6,7 +6,7 @@ class ContactX {
     var options: ContactsXOptions;
 
     init(contact: CNContact, options: ContactsXOptions) {
-        self.contact = contact
+        self.contact = contact;
         self.options = options;
     }
 
@@ -26,6 +26,7 @@ class ContactX {
             return [
                 "id": ob.identifier,
                 "type": ContactsX.mapLabelToString(label: ob.label ?? ""),
+                "normalized" : self.getNormalizedPhoneNumber(phoneNumberString: ob.value.stringValue),
                 "value": ob.value.stringValue
             ]
         }
@@ -76,5 +77,19 @@ class ContactX {
         result["phoneticOrganizationName"] = self.contact.phoneticOrganizationName;
 
         return result as NSDictionary;
+    }
+
+    private func getNormalizedPhoneNumber(phoneNumberString: String) -> String {
+        if(phoneNumberString != "" && self.options.baseCountryCode != nil){
+            do {
+                let phoneNumberCustomDefaultRegion = try ContactsX.getPhoneNumberKitInstance().parse(phoneNumberString, withRegion: self.options.baseCountryCode!!, ignoreType: true);
+
+                return ContactsX.getPhoneNumberKitInstance().format(phoneNumberCustomDefaultRegion, toType : .e164);
+            }
+            catch {
+                return "";
+            }
+        }
+        return "";
     }
 }

@@ -1,5 +1,9 @@
 # Changelog
 
+# 3.1.1
+- Merge for edit company data
+- Merge from original repo
+
 # 3.0.0
 - Merge for adding company data
 
