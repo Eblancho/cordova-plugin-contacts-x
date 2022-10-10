@@ -1,5 +1,8 @@
 # Changelog
 
+# 3.1.2
+- complie -> implementation in build.gradle for compatibiliyy
+
 # 3.1.1
 - Merge for edit company data
 - Merge from original repo
